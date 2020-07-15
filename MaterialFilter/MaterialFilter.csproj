@@ -71,7 +71,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MaterialFilter.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="MaterialFilterWindow.cs" />
+    <Compile Include="ThingFilterUI_DoThingFilterConfigWindow_Patch.cs" />
+    <Compile Include="Dialog_BillConfig_DoWindowContents_Patch.cs" />
+    <Compile Include="Dialog_ManageOutfits_DoWindowContents_Patch.cs" />
+    <Compile Include="ITab_Storage_FillTab_Patch.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

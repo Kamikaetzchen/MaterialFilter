@@ -11,121 +11,6 @@ using UnityEngine;
 
 namespace MaterialFilter
 {
-  [HarmonyPatch(typeof(ITab_Storage), "FillTab")]
-  public static class ITab_Storage_FillTab_Patch
-  {
-	  [HarmonyPostfix]
-	  public static void drawFilterButton(ITab_Storage __instance)
-    {
-	    var buttonSize = new Vector2(80f, 29f);
-      MaterialFilterWindow mfw = new MaterialFilterWindow();
-	    if (Widgets.ButtonText(new Rect(180, 10, buttonSize.x, buttonSize.y), "Filter>>"))
-      {
-        MaterialFilterWindow w = Find.WindowStack.WindowOfType<MaterialFilterWindow>();
-        if (w != null)
-        {
-          w.Close();
-        }
-        else
-        {
-          Find.WindowStack.Add(new MaterialFilterWindow());
-        }
-	    }	
-    }
-  } // class
-
-  public class MaterialFilterWindow : Window
-  {
-    public MaterialFilterWindow()
-    {
-      this.layer = WindowLayer.GameUI;
-      this.preventCameraMotion = false;
-      this.soundAppear = SoundDefOf.TabOpen;
-      this.soundClose = SoundDefOf.TabClose;
-      this.doCloseX = true;
-      this.closeOnClickedOutside = true;
-    }
-    public override Vector2 InitialSize
-    {
-      get
-      {
-        return new Vector2(Math.Min(1000,UI.screenWidth - 300), 480);
-      }
-    }    
-    public override void PreOpen()
-    {
-      this.windowRect = new Rect(300, 370, this.InitialSize.x, this.InitialSize.y);
-    }
-
-    private bool hasMadeFromStuff(ThingCategoryDef tcd)
-    {
-      foreach (ThingDef td in tcd.childThingDefs)
-      {
-        if (td.MadeFromStuff)
-        {
-          return true;
-        }
-      }
-      if (!tcd.childCategories.NullOrEmpty())
-      {
-        foreach (ThingCategoryDef child in tcd.childCategories)
-        {
-          if (hasMadeFromStuff(child))
-          {
-            return true;
-          }
-        }
-      }
-      return false;
-    }
-    public override void DoWindowContents(Rect rect)
-    {
-      //Text.CurFontStyle.alignment = TextAnchor.LowerRight; funzt nich
-      // Stuff
-      List<ThingDef> stuffList = new List<ThingDef>();
-      foreach(ThingDef td in DefDatabase<ThingDef>.AllDefsListForReading)
-      {
-        if (td.stuffProps != null)
-        {
-          stuffList.Add(td);
-        }
-      }
-      float longestStuff = 0;
-      foreach (ThingDef td in stuffList)
-      {
-        longestStuff = Math.Max(longestStuff, Text.CalcSize(td.LabelCap).x);
-      }
-      Rect stuffRect = new Rect(0, 30, longestStuff + 10, 29);
-      foreach (ThingDef td in stuffList)
-      {
-        Widgets.Label(stuffRect, td.LabelCap);
-        stuffRect.y += 30;
-      }
-      // ThingCategories
-      List<ThingCategoryDef> tcdList = new List<ThingCategoryDef>();
-      foreach (ThingCategoryDef tcd in ThingCategoryDefOf.Root.childCategories)
-      {
-        if (hasMadeFromStuff(tcd))
-        {
-          tcdList.Add(tcd);
-        }
-      }
-      float longestThingCat = 0;
-      foreach (ThingCategoryDef tcd in tcdList)
-      {
-        longestThingCat = Math.Max(longestThingCat, Text.CalcSize(tcd.LabelCap).x);
-      }
-      Rect thingCatRect = new Rect(longestStuff + 10, 0, longestThingCat + 10, 29);
-      WidgetRow thingCatWidgets = new WidgetRow(100, 0, UIDirection.RightThenDown, UI.screenWidth - 300, 6);
-      foreach (ThingCategoryDef tcd in tcdList)
-      {
-        thingCatWidgets.Label(tcd.LabelCap, longestThingCat);
-      }
-    }
-    
-
-  } // class
-
   public class MaterialFilter : ModBase
   {
     public static MaterialFilter instance;
@@ -136,35 +21,18 @@ namespace MaterialFilter
         return "MaterialFilter";
       }
     }
-    
     public override void Initialize()
     {
       instance = this;
       Logger.Message("Init");
-
     }
-
     public override void DefsLoaded()
     {
-      //ThingCategoryDef materials = createNewThingCategoryDef("materials", "string_Materials".Translate(), ThingCategoryDefOf.Root);
-      //ThingDef dummy = DefDatabase<ThingDef>.AllDefsListForReading.Find(x => x.defName == "dummy");
-
-      //if (dummy.thingCategories == null)
-      //{
-      //  dummy.thingCategories = new List<ThingCategoryDef>();
-      //}
-
       foreach (StuffCategoryDef scd in DefDatabase<StuffCategoryDef>.AllDefsListForReading)
       {
-        //ThingCategoryDef tcd = createNewThingCategoryDef(scd.defName, scd.label, materials, "string_allow".Translate() + " " + scd.label.Translate());
-        Logger.Message("StuffCategoryDef: " + scd.defName);
-        createSpecialThingFilterDef(scd, null/*tcd*/);
-        //dummy.thingCategories.Add(tcd);
-        //Logger.Message("creating ThingCatDef: " + tcd.defName);
-
-
+        //Logger.Message("StuffCategoryDef: " + scd.defName);
+        createSpecialThingFilterDef(scd/*, tcd*/);
       }
-
       Logger.Message("specialThingFilterDefs generated");
     }
 
@@ -184,7 +52,7 @@ namespace MaterialFilter
       return newCatDef;
     }
     
-    public void createSpecialThingFilterDef(StuffCategoryDef stuffToFilter, ThingCategoryDef parentCategory)
+    public void createSpecialThingFilterDef(StuffCategoryDef stuffToFilter/*, ThingCategoryDef parentCategory*/)
     {
       List<ThingDef> defs = DefDatabase<ThingDef>.AllDefsListForReading;
       Boolean skip = false;
@@ -210,7 +78,7 @@ namespace MaterialFilter
           {
             SpecialThingFilterDef newSpecialFilterDef = new SpecialThingFilterDef
             {
-              defName = "allow" + def.defName,
+              defName = "MaterialFilter_allow" + def.defName,
               label = "string_allow".Translate() + " " + def.label,
               description = "string_allow".Translate() + " " + def.label,
               //parentCategory = parentCategory,
@@ -240,10 +108,11 @@ namespace MaterialFilter
     {
 
       AssemblyBuilder ass = AppDomain.CurrentDomain.DefineDynamicAssembly(new AssemblyName("dynAss"), AssemblyBuilderAccess.RunAndSave);
-      ModuleBuilder moduleBuilder = ass.DefineDynamicModule("dynMod");
+      ModuleBuilder moduleBuilder = ass.DefineDynamicModule("dynMod" + def.defName + ".dll"/*, "dynMod" + def.defName + ".dll"*/);
       TypeBuilder typeBuilder = moduleBuilder.DefineType("Rimworld." + newClassName, TypeAttributes.Public | TypeAttributes.Class, typeof(SpecialThingFilterWorker));
       MethodInfo oldMatchesMethod = typeof(SpecialThingFilterWorker).GetMethod("Matches");
       MethodInfo oldCanEverMatchMethod = typeof(SpecialThingFilterWorker).GetMethod("CanEverMatch");
+
 
       MethodBuilder newMatchesMethod = typeBuilder.DefineMethod
         (
@@ -275,7 +144,9 @@ namespace MaterialFilter
       typeBuilder.DefineMethodOverride(newMatchesMethod, oldMatchesMethod);
       typeBuilder.DefineMethodOverride(newCanEverMatchMethod, oldCanEverMatchMethod);
 
-      return typeBuilder.CreateType();
+      Type newType = typeBuilder.CreateType();
+      //ass.Save("dynAss" + def.defName + ".dll");
+      return newType;
     }
 
     private void generateCanEverMatchILCode(MethodBuilder method)
@@ -298,38 +169,38 @@ namespace MaterialFilter
       il.DeclareLocal(typeof(ThingDef));
       il.DeclareLocal(typeof(Thing));
 
-      Label apparelIsNull = il.DefineLabel();
       Label comparisonDone = il.DefineLabel();
       Label hasNoStuff = il.DefineLabel();
 
-      //if is Apparel then push to stack else push 0 and jump to end
-      il.Emit(OpCodes.Ldarg_1); //load parameter (Ldarg_0 is always 'this')
-      il.Emit(OpCodes.Isinst, typeof(Apparel)); //if is Apparel then push to stack else push 0
-      il.Emit(OpCodes.Stloc_0); //needs to be stored because used twice (would dup do the same thing without needing to ldloc twice?)      
-      il.Emit(OpCodes.Ldloc_0);
-      il.Emit(OpCodes.Brfalse_S, apparelIsNull); // if is not apparel push 0 and ret
+      /*
+          return t.Stuff != null && t.Stuff.defName.Equals("defNameToPush");
+      */
 
-      // if has Stuff then push to stack, else push 0 and jump to end (i.e. Power Armor has no stuff)
-      il.Emit(OpCodes.Ldloc_0);
+      il.Emit(OpCodes.Ldarg_1); //load parameter (Ldarg_0 is always 'this')
       il.EmitCall(OpCodes.Callvirt, typeof(Thing).GetMethod("get_Stuff"), Type.EmptyTypes);
-      il.Emit(OpCodes.Stloc_1);
-      il.Emit(OpCodes.Ldloc_1);
       il.Emit(OpCodes.Brfalse_S, hasNoStuff); // Power Armor has no stuff
-      il.Emit(OpCodes.Ldloc_1);
-      
+      il.Emit(OpCodes.Ldarg_1); //load parameter (Ldarg_0 is always 'this')
+      il.EmitCall(OpCodes.Callvirt, typeof(Thing).GetMethod("get_Stuff"), Type.EmptyTypes);
       // compare defNames
       il.Emit(OpCodes.Ldfld, typeof(ThingDef).GetField("defName", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance));
       il.Emit(OpCodes.Ldstr, defNameToPush);
       il.EmitCall(OpCodes.Call, typeof(string).GetMethod("Equals", new Type[] { typeof(string) }), new Type[] { typeof(string) });
-      il.Emit(OpCodes.Br_S, comparisonDone);
-
-      il.MarkLabel(apparelIsNull);
+      il.Emit(OpCodes.Ret);
       il.MarkLabel(hasNoStuff);
       il.Emit(OpCodes.Ldc_I4_0);
-      il.MarkLabel(comparisonDone);
-
       il.Emit(OpCodes.Ret);
-
     }
   } // class
+
+
+
+
+
+
+
+
+
+
+
+
 } // namespace
