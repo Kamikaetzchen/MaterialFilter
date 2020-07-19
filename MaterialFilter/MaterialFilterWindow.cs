@@ -14,6 +14,7 @@ namespace MaterialFilter
 {
   public class MaterialFilterWindow : MainTabWindow
   {
+    IEnumerable<SpecialThingFilterDef> sdefs;
     ThingFilter filter;
     private float left;
     private float top;
@@ -38,6 +39,8 @@ namespace MaterialFilter
       this.left = __left;
       top = __top;
       filter = __filter;
+      sdefs = DefDatabase<SpecialThingFilterDef>.AllDefsListForReading.FindAll(x => x.defName.StartsWith("MaterialFilter"));
+      
     }
 
     public override Vector2 InitialSize
@@ -74,7 +77,7 @@ namespace MaterialFilter
       return false;
     }
 
-    public void setAllowAll(IEnumerable<SpecialThingFilterDef> sdefs, bool allow)
+    public void setAllowAll(bool allow)
     {
       foreach (SpecialThingFilterDef sdef in sdefs)
       {
@@ -84,14 +87,12 @@ namespace MaterialFilter
 
     public override void DoWindowContents(Rect rect)
     {
-      IEnumerable<SpecialThingFilterDef> sdefs = DefDatabase<SpecialThingFilterDef>.AllDefsListForReading.FindAll(x => x.defName.StartsWith("MaterialFilter"));
       
       float lineHeight = 25f;
       float indent = 5f;
       float padding = 5f;
       string headerText = "Allow items made from";
       Color headerColor = new Color(135, 135, 135);
-
 
       float longestFilterName = 0;
       foreach (SpecialThingFilterDef sdef in sdefs)
@@ -121,35 +122,28 @@ namespace MaterialFilter
       Rect rect2 = new Rect(scrollRect.x + 1f, scrollRect.y + 1f, (scrollRect.width - 2f) / 2f, lineHeight);
 			if (Widgets.ButtonText(rect2, "ClearAll".Translate(), true, true, true))
 			{
-				setAllowAll(sdefs, false);
+				setAllowAll(false);
 			  SoundDefOf.Checkbox_TurnedOff.PlayOneShotOnCamera(null); // using Verse.Sound;
 			}
       if (Widgets.ButtonText(new Rect(rect2.xMax + 1f, rect2.y, scrollRect.xMax - 2f - (rect2.xMax + 1f), lineHeight), "AllowAll".Translate(), true, true, true))
 			{
-				setAllowAll(sdefs, true);
+				setAllowAll(true);
 				SoundDefOf.Checkbox_TurnedOn.PlayOneShotOnCamera(null);
 			}
-
-
 
       scrollRect.y += lineHeight + 2f;
       scrollRect.height -= (lineHeight + 3f);
       Widgets.BeginScrollView(scrollRect, ref scrollPosition, viewRect, true);
       foreach (SpecialThingFilterDef sdef in sdefs)
       { // MaterialFilter_allow
-        ThingDef currentThing = DefDatabase<ThingDef>.AllDefsListForReading.Find(x => x.defName.Equals(sdef.defName.Substring(20)));
-        if (currentThing != null)
+        Widgets.Label(stuffRect, new GUIContent(sdef.LabelCap));
+        stuffRect.x += longestFilterName + padding;
+        bool isAllowed = filter.Allows(sdef);
+        bool hasChanged = isAllowed;
+        Widgets.Checkbox(stuffRect.x, stuffRect.y, ref isAllowed, lineHeight, false, true, WidgetsWork.WorkBoxCheckTex);
+        if (isAllowed != hasChanged)
         {
-          //Text.Anchor = TextAnchor.UpperRight;
-          Widgets.Label(stuffRect, new GUIContent(sdef.LabelCap));
-          stuffRect.x += longestFilterName + padding;
-          bool isAllowed = filter.Allows(sdef);
-          bool hasChanged = isAllowed;
-          Widgets.Checkbox(stuffRect.x, stuffRect.y, ref isAllowed, lineHeight, false, true, WidgetsWork.WorkBoxCheckTex);
-          if (isAllowed != hasChanged)
-          {
-            filter.SetAllow(sdef, isAllowed);
-          }
+          filter.SetAllow(sdef, isAllowed);
         }
         stuffRect.x = indent;
         stuffRect.y += lineHeight;
@@ -162,9 +156,6 @@ namespace MaterialFilter
       Log.Message("padding: " + GUI.skin.verticalScrollbar.padding);
 
       this.windowRect.width = scrollWidth + (2 * this.Margin) + 10;
-      
-
-      //this.Notify_ResolutionChanged();
     }
   }
 }
