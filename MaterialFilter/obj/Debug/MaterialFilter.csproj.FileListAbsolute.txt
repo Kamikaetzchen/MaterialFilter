@@ -1,5 +1,0 @@
-G:\proggen\C#\MaterialFilter\obj\Debug\MaterialFilter.csprojAssemblyReference.cache
-G:\proggen\C#\MaterialFilter\obj\Debug\MaterialFilter.csproj.CoreCompileInputs.cache
-G:\Steam\steamapps\common\RimWorld\Mods\Material Filter\Assemblies\MaterialFilter.dll
-G:\proggen\C#\MaterialFilter\obj\Debug\MaterialFilter.dll
-G:\Steam\steamapps\common\RimWorld\Mods\Material Filter\1.1\Assemblies\MaterialFilter.dll
