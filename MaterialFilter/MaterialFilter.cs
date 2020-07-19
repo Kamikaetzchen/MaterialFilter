@@ -79,7 +79,7 @@ namespace MaterialFilter
             SpecialThingFilterDef newSpecialFilterDef = new SpecialThingFilterDef
             {
               defName = "MaterialFilter_allow" + def.defName,
-              label = "string_allow".Translate() + " " + def.label,
+              label = def.label,
               description = "string_allow".Translate() + " " + def.label,
               //parentCategory = parentCategory,
               parentCategory = ThingCategoryDefOf.Root,
@@ -191,16 +191,4 @@ namespace MaterialFilter
       il.Emit(OpCodes.Ret);
     }
   } // class
-
-
-
-
-
-
-
-
-
-
-
-
 } // namespace
