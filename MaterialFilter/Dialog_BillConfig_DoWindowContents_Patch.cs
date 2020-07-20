@@ -12,43 +12,44 @@ namespace MaterialFilter
     [HarmonyPostfix]
     public static void drawFilterButton(ref Bill_Production ___bill, ref bool ___absorbInputAroundWindow, ref bool ___closeOnClickedOutside, ref Rect ___windowRect)
     {
-      bool hasSmelted = ___bill.recipe.specialProducts != null && ___bill.recipe.specialProducts[0] == SpecialProductType.Smelted;
-      bool hasNoProducts = ___bill.recipe.products.EnumerableNullOrEmpty();
-      if (hasSmelted || hasNoProducts)
+      if (foundSomeStuff(___bill))
       {
-        bool flag = true;
-        for (int i = 0; i < ___bill.recipe.ingredients.Count; i++)
+        ThingFilter filter = ___bill.ingredientFilter;
+        Vector2 buttonSize = new Vector2(122f, 25f);
+        float top = ___windowRect.y;
+        float left = ___windowRect.x + ___windowRect.width;
+        if (Widgets.ButtonText(new Rect(642f, 25f, buttonSize.x, buttonSize.y), "Filter".Translate() + ">>"))
         {
-          if (!___bill.recipe.ingredients[i].IsFixedIngredient)
+          MaterialFilterWindow w = Find.WindowStack.WindowOfType<MaterialFilterWindow>();
+          if (w != null)
           {
-            flag = false;
-            break;
+            ___absorbInputAroundWindow = true;
+            ___closeOnClickedOutside = true;
+            w.Close();
           }
-        }
-        if (!flag)
-        {
-          ThingFilter filter = ___bill.ingredientFilter;
-          Vector2 buttonSize = new Vector2(122f, 25f);
-          float top = ___windowRect.y;
-          float left = ___windowRect.x + ___windowRect.width;
-          if (Widgets.ButtonText(new Rect(642f, 25f, buttonSize.x, buttonSize.y), "Filter".Translate() + ">>"))
+          else
           {
-            MaterialFilterWindow w = Find.WindowStack.WindowOfType<MaterialFilterWindow>();
-            if (w != null)
-            {
-              ___absorbInputAroundWindow = true;
-              ___closeOnClickedOutside = true;
-              w.Close();
-            }
-            else
-            {
-              ___absorbInputAroundWindow = false;
-              ___closeOnClickedOutside = false;
-              Find.WindowStack.Add(new MaterialFilterWindow(filter, top, left, WindowLayer.Dialog));
-            }
+            ___absorbInputAroundWindow = false;
+            ___closeOnClickedOutside = false;
+            Find.WindowStack.Add(new MaterialFilterWindow(filter, top, left, WindowLayer.Dialog));
           }
         }
       }
+    }
+
+    private static bool foundSomeStuff(Bill_Production b)
+    {
+      foreach (IngredientCount ic in b.recipe.ingredients)
+      {
+        foreach (ThingDef tDef in ic.filter.AllowedThingDefs)
+        {
+          if (tDef.MadeFromStuff)
+          {
+            return true;
+          }
+        }
+      }
+      return false;
     }
   }
 }

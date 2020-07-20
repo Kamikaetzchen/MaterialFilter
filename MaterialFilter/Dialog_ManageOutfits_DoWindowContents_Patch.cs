@@ -11,7 +11,6 @@ namespace MaterialFilter
     [HarmonyPostfix]
     public static void drawFilterButton(Outfit ___selOutfitInt, ref bool ___absorbInputAroundWindow, ref bool ___closeOnClickedOutside, ref Rect ___windowRect)
     {
-
       if (___selOutfitInt != null)
       {
         ThingFilter filter = ___selOutfitInt.filter;

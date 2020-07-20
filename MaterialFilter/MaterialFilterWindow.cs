@@ -20,12 +20,12 @@ namespace MaterialFilter
     private float top;
     private Vector2 scrollPosition;
     protected override float Margin
-		{
-			get
-			{
-				return 5f;
-			}
-		}
+    {
+      get
+      {
+        return 8f;
+      }
+    }
     public MaterialFilterWindow(ThingFilter __filter , float __top, float __left, WindowLayer __layer)
     {
       this.layer = __layer;
@@ -37,10 +37,9 @@ namespace MaterialFilter
       this.resizeable = false;
       this.draggable = false;
       this.left = __left;
-      top = __top;
-      filter = __filter;
-      sdefs = DefDatabase<SpecialThingFilterDef>.AllDefsListForReading.FindAll(x => x.defName.StartsWith("MaterialFilter"));
-      
+      this.top = __top;
+      this.filter = __filter;
+      this.sdefs = DefDatabase<SpecialThingFilterDef>.AllDefsListForReading.FindAll(x => x.defName.StartsWith("MaterialFilter"));
     }
 
     public override Vector2 InitialSize
@@ -49,32 +48,11 @@ namespace MaterialFilter
       {
         return new Vector2(Math.Min(300,UI.screenWidth - 300), 480);
       }
-    }    
+    }
+
     public override void PreOpen()
     {
       this.windowRect = new Rect(this.left, this.top, this.InitialSize.x, this.InitialSize.y);
-    }
-
-    private bool hasMadeFromStuff(ThingCategoryDef tcd)
-    {
-      foreach (ThingDef td in tcd.childThingDefs)
-      {
-        if (td.MadeFromStuff)
-        {
-          return true;
-        }
-      }
-      if (!tcd.childCategories.NullOrEmpty())
-      {
-        foreach (ThingCategoryDef child in tcd.childCategories)
-        {
-          if (hasMadeFromStuff(child))
-          {
-            return true;
-          }
-        }
-      }
-      return false;
     }
 
     public void setAllowAll(bool allow)
@@ -103,7 +81,7 @@ namespace MaterialFilter
       float innerWidth = Math.Max(Text.CalcSize(headerText).x, longestFilterName + padding + lineHeight);
       float scrollWidth = indent + innerWidth + GUI.skin.verticalScrollbar.margin.left + GUI.skin.verticalScrollbar.fixedWidth + GUI.skin.verticalScrollbar.margin.right;
       Rect headerRect = new Rect(0, 0, scrollWidth, lineHeight);
-      Rect stuffRect = new Rect(indent, 0f, innerWidth, lineHeight);
+      Rect stuffRect = new Rect(0f, 0f, innerWidth, lineHeight);
       Rect viewRect = new Rect(0f, 0f, innerWidth, sdefs.Count() * lineHeight);
       Rect scrollRect = new Rect(stuffRect.x, lineHeight, scrollWidth, rect.height - lineHeight);
 
@@ -112,30 +90,29 @@ namespace MaterialFilter
       Widgets.Label(headerRect, new GUIContent(headerText));
       Text.Anchor = TextAnchor.UpperLeft;
       stuffRect.width = longestFilterName + padding;
-
-
+      // White Border
       Widgets.DrawMenuSection(scrollRect);
       scrollRect.x += 1f;
       scrollRect.width -= 2f;
-
-
+      // Clear/Allow buttons
       Rect rect2 = new Rect(scrollRect.x + 1f, scrollRect.y + 1f, (scrollRect.width - 2f) / 2f, lineHeight);
-			if (Widgets.ButtonText(rect2, "ClearAll".Translate(), true, true, true))
-			{
-				setAllowAll(false);
-			  SoundDefOf.Checkbox_TurnedOff.PlayOneShotOnCamera(null); // using Verse.Sound;
-			}
-      if (Widgets.ButtonText(new Rect(rect2.xMax + 1f, rect2.y, scrollRect.xMax - 2f - (rect2.xMax + 1f), lineHeight), "AllowAll".Translate(), true, true, true))
-			{
-				setAllowAll(true);
-				SoundDefOf.Checkbox_TurnedOn.PlayOneShotOnCamera(null);
-			}
-
+      if (Widgets.ButtonText(rect2, "ClearAll".Translate(), true, true, true))
+      {
+        setAllowAll(false);
+        SoundDefOf.Checkbox_TurnedOff.PlayOneShotOnCamera(null); // using Verse.Sound;
+      }
+      if (Widgets.ButtonText(new Rect(rect2.xMax + 1f, rect2.y, scrollRect.xMax - 2f - rect2.xMax, lineHeight), "AllowAll".Translate(), true, true, true))
+      {
+        setAllowAll(true);
+        SoundDefOf.Checkbox_TurnedOn.PlayOneShotOnCamera(null);
+      }
+      // list
       scrollRect.y += lineHeight + 2f;
       scrollRect.height -= (lineHeight + 3f);
       Widgets.BeginScrollView(scrollRect, ref scrollPosition, viewRect, true);
       foreach (SpecialThingFilterDef sdef in sdefs)
-      { // MaterialFilter_allow
+      {
+        stuffRect.x = indent;
         Widgets.Label(stuffRect, new GUIContent(sdef.LabelCap));
         stuffRect.x += longestFilterName + padding;
         bool isAllowed = filter.Allows(sdef);
@@ -151,11 +128,8 @@ namespace MaterialFilter
       // has to be reset
       Text.Anchor = TextAnchor.UpperLeft;
       Widgets.EndScrollView();
-
-      Log.Message(" margin: " + GUI.skin.verticalScrollbar.margin);
-      Log.Message("padding: " + GUI.skin.verticalScrollbar.padding);
-
-      this.windowRect.width = scrollWidth + (2 * this.Margin) + 10;
+      // resize window
+      this.windowRect.width = scrollWidth + (2 * this.Margin);
     }
   }
 }

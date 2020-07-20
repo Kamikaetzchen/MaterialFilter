@@ -14,8 +14,6 @@ namespace MaterialFilter
       // TabRect.y is top of window
       Rect TabRect = Traverse.Create(__instance).Property("TabRect").GetValue<Rect>();
       ThingFilter filter = Traverse.Create(__instance).Property("SelStoreSettingsParent").GetValue<IStoreSettingsParent>().GetStoreSettings().filter;
-
-      
       var buttonSize = new Vector2(80f, 29f);
       if (Widgets.ButtonText(new Rect(180, 10, buttonSize.x, buttonSize.y), "Filter".Translate() + ">>"))
       {
