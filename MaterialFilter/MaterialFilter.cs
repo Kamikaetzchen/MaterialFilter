@@ -67,7 +67,7 @@ namespace MaterialFilter
 
             foreach (SpecialThingFilterDef sdef in sdefs)
             {
-              if (sdef.defName == "allow" + def.defName)
+              if (sdef.defName == "MaterialFilter_allow" + def.defName)
               {
                 Logger.Message("Skipping duplicate " + def.defName);
                 skip = true;
