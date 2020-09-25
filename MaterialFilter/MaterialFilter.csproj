@@ -41,11 +41,11 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="HarmonyLib">
-      <HintPath>G:\Steam\steamapps\workshop\content\294100\2009463077\v1.1\Assemblies\0Harmony.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\workshop\content\294100\2009463077\Current\Assemblies\0Harmony.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="HarmonyMod">
-      <HintPath>G:\Steam\steamapps\workshop\content\294100\2009463077\v1.1\Assemblies\HarmonyMod.dll</HintPath>
+      <HintPath>G:\Steam\steamapps\workshop\content\294100\2009463077\Current\Assemblies\HarmonyMod.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
