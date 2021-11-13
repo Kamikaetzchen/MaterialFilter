@@ -34,6 +34,7 @@ namespace MaterialFilter
       this.soundClose = SoundDefOf.TabClose;
       this.doCloseX = false;
       this.closeOnClickedOutside = true;
+      this.def = MainButtonDefOf.Menu; // new in 1.3 i guess
       this.resizeable = false;
       this.draggable = false;
       this.left = __left;

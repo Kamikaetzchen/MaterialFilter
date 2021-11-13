@@ -26,7 +26,7 @@ namespace MaterialFilter
         {
           Find.WindowStack.Add(new MaterialFilterWindow(filter, TabRect.y, ___WinSize.x, WindowLayer.GameUI));
         }
-      }  
+      }
     }
   }
 }

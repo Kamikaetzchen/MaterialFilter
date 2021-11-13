@@ -15,8 +15,8 @@ namespace MaterialFilter
       {
         ThingFilter filter = ___selOutfitInt.filter;
         Vector2 buttonSize = new Vector2(80f, 30f);
-          float top = ___windowRect.y;
-          float left = ___windowRect.x + ___windowRect.width;
+        float top = ___windowRect.y;
+        float left = ___windowRect.x + ___windowRect.width;
         if (Widgets.ButtonText(new Rect(215f, 50f, buttonSize.x, buttonSize.y), "Filter".Translate()))
         {
           MaterialFilterWindow w = Find.WindowStack.WindowOfType<MaterialFilterWindow>();
