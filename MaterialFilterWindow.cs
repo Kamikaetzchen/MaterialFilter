@@ -40,7 +40,7 @@ namespace MaterialFilter
       this.left = __left;
       this.top = __top;
       this.filter = __filter;
-      this.sdefs = DefDatabase<SpecialThingFilterDef>.AllDefsListForReading.FindAll(x => x.defName.StartsWith("MaterialFilter"));
+      this.sdefs = DefDatabase<SpecialThingFilterDef>.AllDefsListForReading.FindAll(x => x.defName.StartsWith("MaterialFilter")).OrderBy<SpecialThingFilterDef,string>(sdefs => sdefs.label);
     }
 
     public override Vector2 InitialSize
