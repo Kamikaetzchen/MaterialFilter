@@ -108,7 +108,7 @@ namespace MaterialFilter
     {
 
       AssemblyBuilder ass = AppDomain.CurrentDomain.DefineDynamicAssembly(new AssemblyName("dynAss"), AssemblyBuilderAccess.RunAndSave);
-      ModuleBuilder moduleBuilder = ass.DefineDynamicModule("dynMod" + def.defName + ".dll"/*, "dynMod" + def.defName + ".dll"*/);
+      ModuleBuilder moduleBuilder = ass.DefineDynamicModule("dynMod" + def.defName + ".dll");
       TypeBuilder typeBuilder = moduleBuilder.DefineType("Rimworld." + newClassName, TypeAttributes.Public | TypeAttributes.Class, typeof(SpecialThingFilterWorker));
       MethodInfo oldMatchesMethod = typeof(SpecialThingFilterWorker).GetMethod("Matches");
       MethodInfo oldCanEverMatchMethod = typeof(SpecialThingFilterWorker).GetMethod("CanEverMatch");
@@ -178,7 +178,7 @@ namespace MaterialFilter
 
       il.Emit(OpCodes.Ldarg_1); //load parameter (Ldarg_0 is always 'this')
       il.EmitCall(OpCodes.Callvirt, typeof(Thing).GetMethod("get_Stuff"), Type.EmptyTypes);
-      il.Emit(OpCodes.Brfalse_S, hasNoStuff); // Power Armor has no stuff
+      il.Emit(OpCodes.Brfalse_S, hasNoStuff); // i.e. Power Armor has no stuff
       il.Emit(OpCodes.Ldarg_1); //load parameter (Ldarg_0 is always 'this')
       il.EmitCall(OpCodes.Callvirt, typeof(Thing).GetMethod("get_Stuff"), Type.EmptyTypes);
       // compare defNames
