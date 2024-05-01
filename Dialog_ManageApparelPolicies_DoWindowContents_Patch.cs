@@ -5,15 +5,15 @@ using UnityEngine;
 
 namespace MaterialFilter
 {
-  [HarmonyPatch(typeof(Dialog_ManageOutfits), "DoWindowContents")]
-  public static class Dialog_ManageOutfits_DoWindowContents_Patch
+  [HarmonyPatch(typeof(Dialog_ManagePolicies<ApparelPolicy>), nameof(Dialog_ManagePolicies<ApparelPolicy>.DoWindowContents))]
+  public static class Dialog_ManageApparelPolicies_DoWindowContents_Patch
   {
     [HarmonyPostfix]
-    public static void drawFilterButton(Outfit ___selOutfitInt, ref bool ___absorbInputAroundWindow, ref bool ___closeOnClickedOutside, ref Rect ___windowRect)
+    public static void drawFilterButton(ApparelPolicy ___policyInt, ref bool ___absorbInputAroundWindow, ref bool ___closeOnClickedOutside, ref Rect ___windowRect)
     {
-      if (___selOutfitInt != null)
+      if (___policyInt != null)
       {
-        ThingFilter filter = ___selOutfitInt.filter;
+        ThingFilter filter = ___policyInt.filter;
         Vector2 buttonSize = new Vector2(80f, 30f);
         float top = ___windowRect.y;
         float left = ___windowRect.x + ___windowRect.width;
